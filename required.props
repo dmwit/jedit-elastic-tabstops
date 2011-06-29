@@ -1,0 +1,8 @@
+plugin.ElasticTabstopsPlugin.activate=defer
+plugin.ElasticTabstopsPlugin.name=Elastic Tabstops
+plugin.ElasticTabstopsPlugin.author=Scala Club
+plugin.ElasticTabstopsPlugin.version=0.1
+plugin.ElasticTabstopsPlugin.docs=documentation.html
+plugin.ElasticTabstopsPlugin.depend.0=jedit 04.02.99.00
+plugin.ElasticTabstopsPlugin.description=a lousy description for a lousy plugin
+plugin.ElasticTabstopsPlugin.longdescription=description.html
