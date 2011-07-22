@@ -1,20 +1,20 @@
-class EquivalenceClass[T](var repr : Option[EquivalenceClass[T]], var rank : Int, val t : T) extends Iterable[T] {
+class EquivalenceClass[T](var rpr : Option[EquivalenceClass[T]], var rank : Int, val t : T) extends Iterable[T] {
 	var next : EquivalenceClass[T] = this; // it's a doubly-linked list, lol
 	var prev : EquivalenceClass[T] = this;
 
 	def getRepr : EquivalenceClass[T] = {
-		repr match {
+		rpr match {
 			case None    => this
 			case Some(r) => {
 				val answer = r.getRepr
-				repr = Some(answer)
+				rpr = Some(answer)
 				answer
 			}
 		}
 	}
 
 	def getFirstRepr = {
-		repr match {
+		rpr match {
 			case None    => t
 			case Some(r) => r.t
 		}
@@ -40,7 +40,7 @@ class EquivalenceClass[T](var repr : Option[EquivalenceClass[T]], var rank : Int
 	}
 
 	def iterator = new It
-	def elements = new It
+	override def elements = new It
 }
 
 object UnionFind {
@@ -49,7 +49,7 @@ object UnionFind {
 	/* when we've already decided which equivalence class should be the new representative */
 	def merge[T] (r1 : EquivalenceClass[T], r2 : EquivalenceClass[T]) {
 		if(r1.rank == r2.rank) r1.rank = r2.rank + 1
-		r1.repr  = Some(r2)
+		r1.rpr  = Some(r2)
 		val r1p  = r1.prev
 		val r2n  = r2.next
 		r1p.next = r2n
