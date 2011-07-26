@@ -1,4 +1,4 @@
-scala_files := $(wildcard ls *.scala)
+scala_files := $(wildcard *.scala)
 class_files := $(scala_files:.scala=.class)
 jedit_jar   := $(shell locate jedit.jar)
 final_jar   := ElasticTabstopsPlugin.jar
