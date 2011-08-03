@@ -1,13 +1,9 @@
-scala_files := $(wildcard *.scala)
-class_files := $(scala_files:.scala=.class)
-jedit_jar   := $(shell locate jedit.jar)
-final_jar   := ElasticTabstopsPlugin.jar
+jedit_jar := $(shell locate jedit.jar | tail -n1)
+final_jar := ElasticTabstopsPlugin.jar
 
-$(final_jar): *.html *.props $(class_files)
+$(final_jar): *.html *.props *.scala
+	CLASSPATH=$(jedit_jar) scalac *.scala
 	jar cf $@ $^
-
-$(class_files): $(scala_files)
-	CLASSPATH=$(jedit_jar) scalac $^
 
 .PHONY: install clean
 
@@ -16,4 +12,4 @@ install: $(final_jar)
 	cp $^ ~/.jedit/jars
 
 clean:
-	-rm $(class_files) $(final_jar)
+	-rm *.class $(final_jar)
