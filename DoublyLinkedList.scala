@@ -29,6 +29,8 @@ class Node[T](val t : T) {
 	def remove = {
 		pc = _child
 		cp = _parent
+		_child  = None
+		_parent = None
 	}
 
 	def insertAfter(parent : Node[T]) = {
