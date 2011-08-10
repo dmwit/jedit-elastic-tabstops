@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+
+<!--
+
+     This is the standard build.xml file for building the ElasticTabstops plugin.
+
+     The 'dist' target compiles the plugin, generates documentation, and creates
+     the JAR file.  Before running the 'dist' target, you will need to choose
+     whether to generate the documentation using one of these two targets:
+
+     To use this template for building your own plugin, make these changes:
+
+     - Change 'name' property for the <project> to the name of your plugin
+     - Change definition of 'jedit.install.dir' to point to the directory
+       containing jedit.jar
+     - If necessary, add any dependencies to the 'project.class.path' definition
+     - If necessary, change the list of files in the 'dist' target
+
+-->
+
+<project name="ElasticTabstops" default="dist" basedir=".">
+
+    <property file="build.properties"/>
+    <property file="../build.properties"/>
+    <property file="${user.home}/.build.properties"/>
+    <property file="${user.home}/build.properties"/>
+
+    <property name="jedit.install.dir"  value="/Applications/jEdit.app/Contents/Resources/Java" />
+    <property name="jar.name"  value="${ant.project.name}.jar"/>
+    <property name="docs-proc.target"  value="xsltproc"/>
+
+    <property name="src.dir" value="."/>
+    <property name="build.dir" value="build"/>
+    <property name="install.dir"  value=".."/>
+
+
+    <path id="project.class.path">
+        <pathelement location="${jedit.install.dir}/jedit.jar"/>
+        <pathelement location="${src.dir}"/>
+        <pathelement location="/opt/local/share/scala-2.9/lib/scala-library.jar"/>
+        <pathelement location="/Applications/jEdit.app/Contents/Resources/Java/jedit.jar"/>
+    </path>
+
+
+    <target name="init">
+        <mkdir dir="${build.dir}"/>
+
+        <property
+          name="scala.home"
+          value="/opt/local/share/scala-2.9"
+        />
+        <property
+          name="scala-library.jar"
+          value="${scala.home}/lib/scala-library.jar"
+           />
+        <path id="build.classpath">
+          <pathelement location="${scala-library.jar}"   />
+          <!--<pathelement location="${your.path}"   />-->
+          <pathelement location="${build.dir}"   />
+        </path>
+        <taskdef resource="scala/tools/ant/antlib.xml">
+          <classpath>
+            <pathelement location="${scala.home}/lib/scala-compiler.jar"   />
+            <pathelement location="${scala-library.jar}"   />
+          </classpath>
+        </taskdef>
+            <echo>${scala.home}/lib/scala-compiler.jar</echo>
+    </target>
+
+
+    <target name="compile" depends="init">
+        <scalac
+            srcdir="${src.dir}"
+            destdir="${build.dir}"
+            deprecation="on"
+        >
+            <classpath refid="project.class.path"/>
+            <include name="**/*.scala"/>
+        </scalac>
+    </target>
+
+
+    <target name="dist" depends="compile">
+        <mkdir dir="${install.dir}"/>
+
+        <jar jarfile="${install.dir}/${jar.name}">
+            <fileset dir="${build.dir}"/>
+            <fileset dir="${src.dir}">
+                <include name="actions.xml"/>
+                <include name="**/*.props"/>
+                <include name="**/*.gif"/>
+                <include name="**/*.html"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete>
+            <fileset dir="." includes="users-guide.html"/>
+            <fileset dir="." includes="docbook-wrapper.xsl"/>
+            <fileset dir="." includes="**/*~"/>
+        </delete>
+    </target>
+</project>
