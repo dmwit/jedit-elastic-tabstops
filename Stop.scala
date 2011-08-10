@@ -3,12 +3,13 @@ import scala.math.max
 class Stop(offsetArg : Double, widthArg : Double) {
 	private var _offset : Double = offsetArg
 	private var _width  : Double = widthArg
-	var active     : Boolean = true
+	private var _active : Boolean = true
 	val eqClass    : EquivalenceClass[Stop] = UnionFind.singleton(this)
 	val dependency : Node[Stop] = new Node[Stop](this)
 
 	def offset = _offset
 	def width  = _width
+	def active = _active
 
 	private def pingDependents(newSize : Double) {
 		if(!active) return
@@ -35,5 +36,15 @@ class Stop(offsetArg : Double, widthArg : Double) {
 	def width_=(newWidth : Double) {
 		pingDependents(newWidth + offset)
 		_width = newWidth
+	}
+
+	def deactivate {
+		if(!active) return
+		for(child <- dependency.child) if(width + offset == child.offset) {
+			/* TODO: ping eqClass */
+			/* TODO: set child's offset (to 0 if parent is None, or based on parent's eqClass otherwise) */
+		}
+		dependency.remove
+		active = false
 	}
 }
