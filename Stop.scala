@@ -40,11 +40,11 @@ class Stop(offsetArg : Double, widthArg : Double) {
 
 	def deactivate {
 		if(!active) return
-		for(child <- dependency.child) if(width + offset == child.offset) {
-			/* TODO: ping eqClass */
-			/* TODO: set child's offset (to 0 if parent is None, or based on parent's eqClass otherwise) */
+		for(child <- dependency.child) if(width + offset == child.t.offset) {
+			// TODO: ping eqClass
+			// TODO: set child's offset (to 0 if parent is None, or based on parent's eqClass otherwise)
 		}
 		dependency.remove
-		active = false
+		_active = false
 	}
 }
