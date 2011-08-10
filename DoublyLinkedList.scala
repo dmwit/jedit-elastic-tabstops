@@ -29,9 +29,12 @@ class Node[T](val t : T) {
 	def remove = {
 		pc = _child
 		cp = _parent
+		_child  = None
+		_parent = None
 	}
 
 	def insertAfter(parent : Node[T]) = {
+		remove
 		_child  = parent._child
 		_parent = Some(parent)
 		parent._child = Some(this)
@@ -39,6 +42,7 @@ class Node[T](val t : T) {
 	}
 
 	def insertBefore(child : Node[T]) = {
+		remove
 		_parent = child._parent
 		_child  = Some(child)
 		child._parent = Some(this)
