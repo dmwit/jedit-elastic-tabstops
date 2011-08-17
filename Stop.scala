@@ -14,13 +14,13 @@ class Stop(offsetArg : Double, widthArg : Double) {
 	def end    = offsetrcache
 
 	private def pingDependents(newSize : Double) {
-		// TODO: can be optimized a lot now that we have offsetrcache
 		if(!active) return
-		var grew   = false
-		var shrunk = true
+		val grew   = newSize > offsetrcache
+		var shrunk = (width + offset == offsetrcache) && newSize < offsetrcache
 		var size   = newSize
-		for(other <- eqClass) if(other.active) {
-			grew   ||= (newSize > other.width + other.offset)
+		val iter   = eqClass.iterator
+		while(iter.hasNext && shrunk) {
+			val other = iter.next
 			shrunk &&= (newSize < other.width + other.offset)
 			if(!eq(other))
 				size = max(size, other.width + other.offset)
