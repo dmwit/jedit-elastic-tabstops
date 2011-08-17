@@ -4,14 +4,17 @@ class Stop(offsetArg : Double, widthArg : Double) {
 	private var _offset : Double = offsetArg
 	private var _width  : Double = widthArg
 	private var _active : Boolean = true
-	val eqClass    : EquivalenceClass[Stop] = UnionFind.singleton(this)
+	private var offsetrcache : Double = offsetArg + widthArg
+	private val eqClass : EquivalenceClass[Stop] = UnionFind.singleton(this)
 	val dependency : Node[Stop] = new Node[Stop](this)
 
 	def offset = _offset
 	def width  = _width
 	def active = _active
+	def end    = offsetrcache
 
 	private def pingDependents(newSize : Double) {
+		// TODO: can be optimized a lot now that we have offsetrcache
 		if(!active) return
 		var grew   = false
 		var shrunk = true
@@ -22,10 +25,13 @@ class Stop(offsetArg : Double, widthArg : Double) {
 			if(!eq(other))
 				size = max(size, other.width + other.offset)
 		}
-		if(grew || shrunk)
-			for(other <- eqClass) if(other.active)
+		if(grew || shrunk) {
+			for(other <- eqClass) if(other.active) {
 				for(child <- other.dependency.child)
 					child.t.offset = size
+				other.offsetrcache = size
+			}
+		}
 	}
 
 	def offset_=(newOffset : Double) {
@@ -36,6 +42,17 @@ class Stop(offsetArg : Double, widthArg : Double) {
 	def width_=(newWidth : Double) {
 		pingDependents(newWidth + offset)
 		_width = newWidth
+	}
+
+	def align(other : Stop) {
+		if(other.offsetrcache < offsetrcache) { other.align(this); return }
+		if(other.offsetrcache > offsetrcache)
+			for(stop <- eqClass) {
+				stop.offsetrcache = other.offsetrcache
+				for(child <- stop.dependency.child)
+					child.t.offset = other.offsetrcache
+			}
+		UnionFind.union(other.eqClass, eqClass)
 	}
 
 	def deactivate {

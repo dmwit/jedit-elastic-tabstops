@@ -76,9 +76,8 @@ object Demo {
 					// defensive programming: go to offset (even though we're supposed to already be there)
 					for(i <- column to (block._1.offset.toInt - 1)) printCount(" ")
 					printCount(block._2)
-					for(nextStop <- block._1.dependency.child)
-						for(i <- column to (nextStop.t.offset.toInt - name.length - 3))
-							printCount(" ")
+					for(i <- column to (block._1.end.toInt - name.length - 3))
+						printCount(" ")
 					printCount("{" + name + "}")
 				}
 			}
@@ -125,7 +124,7 @@ object Demo {
 					val nameIx2   = prompt("Second stop to align:", mostNames, -1)
 					val name      = allNames.apply(nameIx)
 					val name2     = mostNames.apply(nameIx2)
-					UnionFind.union(document._1.apply(name)._1.eqClass, document._1.apply(name2)._1.eqClass)
+					document._1.apply(name)._1.align(document._1.apply(name2)._1)
 			}
 		}
 	}
