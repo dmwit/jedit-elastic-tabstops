@@ -10,7 +10,9 @@ object Demo {
 	def bracket(s : String) = "[" + s + "]"
 	// TODO: formatting is a bit off for these two
 	// prompt("What now?", Stream.continually("quit").take(15).toList,  6)
-	def prompt(question : String, choices : List[String], default : Int) = {
+	def prompt(question : String, choices : List[String], default : Int) : Int = {
+		if(choices.length == 0) throw new IllegalArgumentException("user was prompted for an answer, but there were no acceptable answers!")
+		if(choices.length == 1) return 0
 		val short   = (choices forall { _.length == 1 })
 		val builder = new StringBuilder()
 		if(short) {
@@ -94,7 +96,9 @@ object Demo {
 		var document : (Map[String,(Stop,String)], List[List[String]]) = (Map(), List())
 		while(true) {
 			pprint(document)
-			val operations = List("Add a line", "Add a block", "Edit text in a block") ++
+			val operations =
+				List("Add a line") ++
+				(if(document._2.isEmpty) List() else List("Add a block", "Edit text in a block")) ++
 				(if(document._1.count(_ => true) >= 2) List("Align two stops") else List())
 			prompt("What now?", operations, 0) match {
 				case 0 =>
