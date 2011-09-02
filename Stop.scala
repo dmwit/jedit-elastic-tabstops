@@ -58,11 +58,11 @@ class Stop(offsetArg : Double, widthArg : Double) {
 	def deactivate : Boolean = {
 		// avoid work whenever possible
 		if(!active) return false
-		if(dependency.parent.isEmpty) return false
+		if(dependency.parent.isEmpty && !dependency.child.isEmpty) return false
 
 		// store dependencies, then deactivate
-		val maybeChild = dependency.child
-		val parent = dependency.parent.get // OK because if the parent is None, we've already returned false
+		val maybeChild  = dependency.child
+		val maybeParent = dependency.parent
 		_active = false
 		dependency.remove
 
@@ -87,8 +87,9 @@ class Stop(offsetArg : Double, widthArg : Double) {
 						child.t.offset = size
 				}
 		}
-		for(child <- maybeChild)
-			child.t.offset = parent.t.offsetrcache
+		for(parent <- maybeParent)
+			for(child <- maybeChild)
+				child.t.offset = parent.t.offsetrcache
 
 		return true
 	}

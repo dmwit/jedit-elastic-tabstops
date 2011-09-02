@@ -98,7 +98,7 @@ object Demo {
 			pprint(document)
 			val operations =
 				List("Add a line") ++
-				(if(document._2.isEmpty) List() else List("Add a block", "Edit text in a block")) ++
+				(if(document._2.isEmpty) List() else List("Add a block", "Delete a block", "Edit text in a block")) ++
 				(if(document._1.count(_ => true) >= 2) List("Align two stops") else List())
 			prompt("What now?", operations, 0) match {
 				case 0 =>
@@ -115,13 +115,23 @@ object Demo {
 					document = (document._1 + Tuple2(name, (stop, "")),
 						document._2.take(line) ++ List(oldLine ++ List(name)) ++ document._2.drop(line+1))
 				case 2 =>
+					val lineIx = prompt("Which line?", (0 to (document._2.length - 1)).toList.map(_.toString), -1)
+					val line   = document._2.apply(lineIx)
+					val nameIx = prompt("Which stop?", line, -1)
+					val name   = line.apply(nameIx)
+					if(document._1.apply(name)._1.deactivate) {
+						val newLine  = List(line.take(nameIx) ++ line.drop(nameIx + 1)).filterNot(_.isEmpty)
+						val newLines = document._2.take(lineIx) ++ newLine ++ document._2.drop(lineIx + 1)
+						document = (document._1 - name, newLines)
+					} else println("NOPE.avi")
+				case 3 =>
 					val allNames = document._1.keys.toList
 					val name = allNames.apply(prompt("Which stop?", allNames, -1))
 					val text = promptLine("Enter the new text:", "")
 					val stop = document._1.apply(name)._1
 					stop.width = name.length + text.length + 2
 					document = (document._1 + Tuple2(name, (stop, text)), document._2)
-				case 3 =>
+				case 4 =>
 					val allNames  = document._1.keys.toList
 					val nameIx    = prompt("First stop to align:", allNames, -1)
 					val mostNames = (allNames take nameIx) ++ (allNames drop (nameIx + 1))
