@@ -55,13 +55,41 @@ class Stop(offsetArg : Double, widthArg : Double) {
 		UnionFind.union(other.eqClass, eqClass)
 	}
 
-	def deactivate {
-		if(!active) return
-		for(child <- dependency.child) if(width + offset == child.t.offset) {
-			// TODO: ping eqClass
-			// TODO: set child's offset (to 0 if parent is None, or based on parent's eqClass otherwise)
-		}
-		dependency.remove
+	def deactivate : Boolean = {
+		// avoid work whenever possible
+		if(!active) return false
+		if(dependency.parent.isEmpty) return false
+
+		// store dependencies, then deactivate
+		val maybeChild = dependency.child
+		val parent = dependency.parent.get // OK because if the parent is None, we've already returned false
 		_active = false
+		dependency.remove
+
+		// fix up offsets and caches
+		// only need to fix up offsets when we are (one of) the stop(s)
+		// forcing the current offset to be as large as it is
+		if(offset + width == offsetrcache) {
+			// compute the new offset
+			var newSize = None : Option[Double]
+			for(stop <- eqClass) if(stop.active) {
+				newSize = newSize match {
+					case None => Some(stop.width + stop.offset)
+					case Some(size) => Some(max(size, stop.width + stop.offset))
+				}
+			}
+
+			// inform everybody of the new offset
+			for(size <- newSize)
+				for(stop <- eqClass) if(stop.active) {
+					stop.offsetrcache = size
+					for(child <- stop.dependency.child)
+						child.t.offset = size
+				}
+		}
+		for(child <- maybeChild)
+			child.t.offset = parent.t.offsetrcache
+
+		return true
 	}
 }
