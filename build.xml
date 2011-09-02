@@ -25,9 +25,11 @@
     <property file="${user.home}/.build.properties"/>
     <property file="${user.home}/build.properties"/>
 
-    <property name="jedit.install.dir"  value="/Applications/jEdit.app/Contents/Resources/Java" />
+    <property name="jedit.install.dir"  value="${user.home}/jEdit4.5/jEdit/build" />
     <property name="jar.name"  value="${ant.project.name}.jar"/>
     <property name="docs-proc.target"  value="xsltproc"/>
+    <property name="scala.home" value="/usr/share/scala"/>
+    <property name="scala-library.jar" value="${scala.home}/lib/scala-library.jar"/>
 
     <property name="src.dir" value="."/>
     <property name="build.dir" value="build"/>
@@ -37,22 +39,14 @@
     <path id="project.class.path">
         <pathelement location="${jedit.install.dir}/jedit.jar"/>
         <pathelement location="${src.dir}"/>
-        <pathelement location="/opt/local/share/scala-2.9/lib/scala-library.jar"/>
-        <pathelement location="/Applications/jEdit.app/Contents/Resources/Java/jedit.jar"/>
+        <pathelement location="${scala-library.jar}"/>
+        <pathelement location="${jedit.install.dir}"/>
     </path>
 
 
     <target name="init">
         <mkdir dir="${build.dir}"/>
 
-        <property
-          name="scala.home"
-          value="/opt/local/share/scala-2.9"
-        />
-        <property
-          name="scala-library.jar"
-          value="${scala.home}/lib/scala-library.jar"
-           />
         <path id="build.classpath">
           <pathelement location="${scala-library.jar}"   />
           <!--<pathelement location="${your.path}"   />-->
@@ -64,7 +58,6 @@
             <pathelement location="${scala-library.jar}"   />
           </classpath>
         </taskdef>
-            <echo>${scala.home}/lib/scala-compiler.jar</echo>
     </target>
 
 
